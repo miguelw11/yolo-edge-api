@@ -104,12 +104,17 @@ jobs:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
       - name: Executar Deploy via SSH
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          host:     ${{ secrets.RPI_HOST }}
+          host: ${{ secrets.RPI_HOST }}
           username: ${{ secrets.RPI_USER }}
-          key:      ${{ secrets.RPI_SSH_KEY }}
+          key: ${{ secrets.RPI_SSH_KEY }}
+          script_stop: true
+          command_timeout: 10m
           script: |
+            export DEBIAN_FRONTEND=noninteractive
             cd ~/yolo-edge-api
-            git pull origin main
-            bash scripts/deploy.sh
+            git fetch origin main
+            git reset --hard origin/main
+            docker compose down
+            docker compose up -d --build
