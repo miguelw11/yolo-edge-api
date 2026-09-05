@@ -114,12 +114,12 @@ jobs:
           timeout: 30s
           command_timeout: 5m
           script_stop: true
+          debug: true
           script: |
             export DEBIAN_FRONTEND=noninteractive
             cd ~/yolo-edge-api
             git fetch origin main
             git reset --hard origin/main
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker compose pull yolo-api yolo-stream
             docker compose down
             docker compose up -d --no-build yolo-api yolo-stream
