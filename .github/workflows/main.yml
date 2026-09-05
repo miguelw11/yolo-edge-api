@@ -104,23 +104,24 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
-      - name: Executar Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.RPI_HOST }}
-          username: ${{ secrets.RPI_USER }}
-          key: ${{ secrets.RPI_SSH_KEY }}
-          port: 22
-          timeout: 30s
-          command_timeout: 5m
-          script_stop: true
-          script: |
+      - name: Executar Deploy via SSH Nativo
+        env:
+          SSH_KEY: ${{ secrets.RPI_SSH_KEY }}
+          HOST: ${{ secrets.RPI_HOST }}
+          USER: ${{ secrets.RPI_USER }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no "$USER@$HOST" << 'EOF'
             set -e
-            export DEBIAN_FRONTEND=noninteractive
             cd ~/yolo-edge-api
             git fetch origin main
             git reset --hard origin/main
-            docker compose pull -q yolo-api yolo-stream
+            docker compose pull
             docker compose down --remove-orphans
-            docker compose up -d --no-build yolo-api yolo-stream
+            docker compose up -d --no-build
             docker image prune -f
+          EOF
