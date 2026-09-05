@@ -114,13 +114,13 @@ jobs:
           timeout: 30s
           command_timeout: 5m
           script_stop: true
-          debug: true
           script: |
+            set -e
             export DEBIAN_FRONTEND=noninteractive
             cd ~/yolo-edge-api
             git fetch origin main
             git reset --hard origin/main
-            docker compose pull yolo-api yolo-stream
-            docker compose down
+            docker compose pull -q yolo-api yolo-stream
+            docker compose down --remove-orphans
             docker compose up -d --no-build yolo-api yolo-stream
             docker image prune -f
