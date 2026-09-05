@@ -1,5 +1,6 @@
 services:
   yolo-api:
+    image: ghcr.io/miguelw11/yolo-edge-api/yolo-api:latest
     build:
       context: .
       dockerfile: Dockerfile.api
@@ -20,6 +21,7 @@ services:
       start_period: 30s
 
   yolo-stream:
+    image: ghcr.io/miguelw11/yolo-edge-api/yolo-api:latest
     build:
       context: .
       dockerfile: Dockerfile.api
