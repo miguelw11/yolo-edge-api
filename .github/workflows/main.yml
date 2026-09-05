@@ -116,8 +116,8 @@ deploy:
           script: |
             export DEBIAN_FRONTEND=noninteractive
             cd ~/yolo-edge-api
-            git fetch -q origin main
-            git reset -q --hard origin/main
-            docker compose pull
-            docker compose up -d --no-build
+            git fetch origin main
+            git reset --hard origin/main
+            docker compose pull || true
+            docker compose up -d
             docker image prune -f
