@@ -119,6 +119,8 @@ jobs:
             cd ~/yolo-edge-api
             git fetch origin main
             git reset --hard origin/main
-            docker compose pull || true
-            docker compose up -d --no-build
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker compose pull yolo-api yolo-stream
+            docker compose down
+            docker compose up -d --no-build yolo-api yolo-stream
             docker image prune -f
