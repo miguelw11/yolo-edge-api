@@ -90,7 +90,7 @@ jobs:
       - name: Executar Validação (mAP@0.5 >= 0.50)
         run: python scripts/validate_model.py
 
-  deploy:
+deploy:
     name: "Deploy → Raspberry Pi 5"
     needs: model-gate
     runs-on: ubuntu-latest
@@ -111,12 +111,13 @@ jobs:
           key: ${{ secrets.RPI_SSH_KEY }}
           port: 22
           timeout: 30s
-          command_timeout: 15m
+          command_timeout: 5m
           script_stop: true
           script: |
             export DEBIAN_FRONTEND=noninteractive
             cd ~/yolo-edge-api
             git fetch -q origin main
             git reset -q --hard origin/main
-            docker compose down
-            docker compose up -d --build
+            docker compose pull
+            docker compose up -d --no-build
+            docker image prune -f
