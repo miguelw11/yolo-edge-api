@@ -1,4 +1,25 @@
-yolo-client:
+version: '3.8'
+
+services:
+  yolo-api:
+    image: ghcr.io/miguelw11/yolo-edge-api/yolo-api:latest
+    container_name: yolo-api
+    ports:
+      - "8000:8000"
+    networks:
+      - yolo-net
+
+  yolo-stream:
+    image: ghcr.io/miguelw11/yolo-edge-api/yolo-api:latest
+    container_name: yolo-stream
+    ports:
+      - "5000:5000"
+    networks:
+      - yolo-net
+    depends_on:
+      - yolo-api
+
+  yolo-client:
     image: ghcr.io/miguelw11/yolo-edge-api/yolo-client:latest
     container_name: yolo-client
     volumes:
@@ -9,8 +30,7 @@ yolo-client:
     networks:
       - yolo-net
     depends_on:
-      yolo-api:
-        condition: service_healthy
+      - yolo-api
 
 networks:
   yolo-net:
